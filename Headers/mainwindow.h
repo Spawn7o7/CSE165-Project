@@ -40,13 +40,14 @@ private:
     DrawingSpace *drawingSpace;
     QMenu *saveAs;
     QMenu *fileMenu;
-    QMenu *options;
+    QMenu *brushOptions;
 
     QAction *openAction;
+    QAction *closeAction;
     QList<QAction *> saveAsAction; //this will allow the user to save file in various formats EX: jpg, png, etc
     QAction *penColorAction;
     QAction *penSizeAction;
     QAction *printAction;
-    QAction *clearAllAction;
+    QAction *deleteAllAction;
 };
 #endif // MAINWINDOW_H
