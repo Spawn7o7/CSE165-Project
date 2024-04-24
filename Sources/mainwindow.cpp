@@ -81,10 +81,6 @@ void MainWindow::createActions(){
         saveAsAction.append(action);
     }
 
-    // Selecting to print image
-    printAction = new QAction(tr("&Print..."), this);
-    connect(printAction, SIGNAL(triggered()), drawingSpace, SLOT(print()));
-
     // Quitting the drawing program
     closeAction = new QAction(tr("&Exit"), this);
     closeAction->setShortcuts(QKeySequence::Quit);
@@ -92,13 +88,12 @@ void MainWindow::createActions(){
 
     // Pen Customization
     penColorAction = new QAction(tr("&Pen Color..."), this);
-    connect(penColorAction, SIGNAL(triggered()), drawingSpace, SLOT(penColor()));
+    connect(penColorAction, SIGNAL(triggered()), this, SLOT(penColor()));
     penSizeAction = new QAction(tr("Pen &Size..."), this);
-    connect(penSizeAction, SIGNAL(triggered()), drawingSpace, SLOT(penSize()));
+    connect(penSizeAction, SIGNAL(triggered()), this, SLOT(penSize()));
 
-    // An action that clears the screen
+    // Clears the screen
     deleteAllAction = new QAction(tr("&Delete All..."), this);
-    deleteAllAction->setShortcut(tr("Ctrl+L"));
     connect(deleteAllAction, SIGNAL(triggered()), drawingSpace, SLOT(clearImage()));
 }
 
@@ -111,19 +106,20 @@ void MainWindow::createMenu(){
 
     fileMenu = new QMenu(tr("&File"), this);
     fileMenu->addAction(openAction);
-    //fileMenu->addAction(saveAs); // Error: no matching member function?
-    fileMenu->addAction(printAction);
+    fileMenu->addMenu(saveAs);
     fileMenu->addSeparator();
     fileMenu->addAction(closeAction);
 
     brushOptions = new QMenu(tr("&Brush"), this);
     brushOptions->addAction(penColorAction);
     brushOptions->addAction(penSizeAction);
-    brushOptions->addSeparator();
-    brushOptions->addAction(deleteAllAction);
+
+    eraseOptions = new QMenu(tr("&Erase"), this);
+    eraseOptions->addAction(deleteAllAction);
 
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(brushOptions);
+    menuBar()->addMenu(eraseOptions);
 }
 
 
@@ -149,8 +145,7 @@ bool MainWindow::saveFile(const QByteArray &fileFormat){
     QString initialPath = QDir::currentPath() + "/untitled." + fileFormat;
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save As"), initialPath,
                                                     tr("%1 Files (*.%2);; All Files(*)")
-                                                    .arg(QString::fromLatin1(fileFormat.toUpper()))
-                                                        .arg(QString::fromLatin1(fileFormat)));
+                                                    .arg(QString::fromLatin1(fileFormat.toUpper())).arg(QString::fromLatin1(fileFormat)));
     if(fileName.isEmpty()){
         return false;
     }
