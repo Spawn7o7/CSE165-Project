@@ -6,6 +6,13 @@
 #include <QPoint>
 #include <QWidget>
 
+//class drawingspace
+//{
+//public:
+//    drawingspace();
+//};
+
+
 class DrawingSpace : public QWidget{
     Q_OBJECT
 
@@ -23,7 +30,6 @@ public:
 
 public slots:
     void clearImage();
-    void print();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -34,7 +40,7 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
-    void drawLineTo(const QPoint &endPoint);
+    void drawingTo(const QPoint &endPoint);
     void resizeImage(QImage *image, const QSize &newSize);
 
     bool modified;
