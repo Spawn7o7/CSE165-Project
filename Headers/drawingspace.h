@@ -1,17 +1,10 @@
 #ifndef DRAWINGSPACE_H
 #define DRAWINGSPACE_H
 
+#include <QWidget>
 #include <QColor>
 #include <QImage>
 #include <QPoint>
-#include <QWidget>
-
-//class drawingspace
-//{
-//public:
-//    drawingspace();
-//};
-
 
 class DrawingSpace : public QWidget{
     Q_OBJECT
@@ -23,6 +16,8 @@ public:
 
     void setPenColor(const QColor &newColor);
     void setPenSize(int newSize);
+
+    int selectedSize = 0;
 
     bool isModified() const {return modified;}
     QColor penColor() const {return myPenColor;}
@@ -40,7 +35,7 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
-    void drawingTo(const QPoint &endPoint);
+    void drawingSeg(const QPoint &endPoint);
     void resizeImage(QImage *image, const QSize &newSize);
 
     bool modified;
@@ -49,7 +44,7 @@ private:
     QColor myPenColor;
     int myPenSize;
     QImage image;
-    QPoint lastPoint;
+    QPoint startingPoint;
 
 };
 

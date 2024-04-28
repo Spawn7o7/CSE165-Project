@@ -25,9 +25,10 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private slots: //aka events
-    void open();
-    void save();
+    void openFile();
+    void saveFile();
     void penColor();
+    void eraserPen();
     void penSize();
 
 private:
@@ -38,16 +39,19 @@ private:
     bool saveFile(const QByteArray &fileFormat);
 
     DrawingSpace *drawingSpace;
-    QMenu *saveAs;
+
     QMenu *fileMenu;
+    QMenu *saveAs;
+    QList<QAction *> saveAsAction; //this will allow the user to save file in various formats EX: jpg, png, etc
     QMenu *brushOptions;
     QMenu *eraseOptions;
 
     QAction *openAction;
     QAction *closeAction;
-    QList<QAction *> saveAsAction; //this will allow the user to save file in various formats EX: jpg, png, etc
     QAction *penColorAction;
+    QAction *eraserPenAction;
     QAction *penSizeAction;
+
     QAction *deleteAllAction;
 };
 #endif // MAINWINDOW_H
