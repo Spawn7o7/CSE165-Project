@@ -17,11 +17,11 @@ public:
     void setPenColor(const QColor &newColor);
     void setPenSize(int newSize);
 
+    bool isModified() const {return modified;}
     int selectedSize = 0;
 
-    bool isModified() const {return modified;}
-    QColor penColor() const {return myPenColor;}
-    int penSize() const {return myPenSize;}
+    QColor penColor() const {return selectedPenColor;}
+    int penSize() const {return selectedPenSize;}
 
 public slots:
     void clearImage();
@@ -41,8 +41,8 @@ private:
     bool modified;
     bool drawing;
 
-    QColor myPenColor;
-    int myPenSize;
+    QColor selectedPenColor;
+    int selectedPenSize;
     QImage image;
     QPoint startingPoint;
 
