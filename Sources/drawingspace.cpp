@@ -58,7 +58,7 @@ void DrawingSpace::clearImage(){
 
 void DrawingSpace::mousePressEvent(QMouseEvent *event){
     if(event->button() == Qt::LeftButton){
-        lastPoint = event->pos();
+        startingPoint = event->pos();
         drawing = true;
     }
 }
@@ -66,14 +66,14 @@ void DrawingSpace::mousePressEvent(QMouseEvent *event){
 
 void DrawingSpace::mouseMoveEvent(QMouseEvent *event){
     if((event->buttons() == Qt::LeftButton) && drawing){
-        drawingTo(event->pos());
+        drawingSeg(event->pos());
     }
 }
 
 
 void DrawingSpace::mouseReleaseEvent(QMouseEvent *event){
     if(event->button() == Qt::LeftButton && drawing){
-        drawingTo(event->pos());
+        drawingSeg(event->pos());
         drawing = false;
     }
 }
@@ -97,16 +97,15 @@ void DrawingSpace::resizeEvent(QResizeEvent *event){ // resize the canvas
 }
 
 
-void DrawingSpace::drawingTo(const QPoint &endPoint){
+void DrawingSpace::drawingSeg(const QPoint &endPoint){
     QPainter painter(&image);
     painter.setPen(QPen(myPenColor, myPenSize, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    painter.drawLine(lastPoint, endPoint);
+    painter.drawLine(startingPoint, endPoint);
     modified = true;
 
-    // adds a bit of 'fluff' around the edges of the brush, might remove
     int filler = (myPenSize / 2) + 2;
-    update(QRect(lastPoint, endPoint).normalized().adjusted(-filler, -filler, +filler, +filler));
-    lastPoint = endPoint;
+    update(QRect(startingPoint, endPoint).normalized().adjusted(-filler, -filler, +filler, +filler));
+    startingPoint = endPoint;
 }
 
 

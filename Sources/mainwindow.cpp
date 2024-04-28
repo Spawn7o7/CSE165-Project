@@ -2,9 +2,10 @@
 
 #include "mainwindow.h"
 #include "drawingspace.h"
+#include "penSizeIcons.h"
 #include "ui_mainwindow.h"
 
-//might need to comment out UI window if it clashes with app code, have not run and tested yet.
+// Not entirely sure what the ui window does... but keeping it here in case the file is necessary
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -20,17 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 
-void MainWindow::closeEvent(QCloseEvent *event){ //prompts user to save before they fully close out of app
-    if(quickSave()){
-        event->accept();
-    }
-    else{
-        event->ignore();
-    }
-}
-
-
-void MainWindow::open(){
+void MainWindow::openFile(){
     if(quickSave()){ // If save file found, allow user to select it or start a new drawing
         QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath());
 
@@ -41,7 +32,17 @@ void MainWindow::open(){
 }
 
 
-void MainWindow::save(){
+void MainWindow::closeEvent(QCloseEvent *event){ //prompts user to save before they fully close out of app
+    if(quickSave()){
+        event->accept();
+    }
+    else{
+        event->ignore();
+    }
+}
+
+
+void MainWindow::saveFile(){
     QAction *action = qobject_cast<QAction *>(sender());
     QByteArray fileFormat = action->data().toByteArray();
     saveFile(fileFormat);
@@ -56,13 +57,17 @@ void MainWindow::penColor(){
 }
 
 
-void MainWindow::penSize(){
-    bool confirm;
-    int newSize = QInputDialog::getInt(this, tr("Totally Not MS Paint"), tr("Select Pen Size: "), drawingSpace->penSize(), 1, 25, 1, &confirm);
-
-    if(confirm){
-        drawingSpace->setPenSize(newSize);
+void MainWindow::penSize() {
+    QColor currentColor = drawingSpace->penColor();
+    penSizeIcons dialog(currentColor, this);
+    if (dialog.exec() == QDialog::Accepted) {
+        drawingSpace->setPenSize(dialog.getSelectedSize());
     }
+}
+
+
+void MainWindow::eraserPen() {
+    drawingSpace->setPenColor(Qt::white);
 }
 
 
@@ -82,39 +87,45 @@ void MainWindow::createActions(){
     }
 
     // Quitting the drawing program
-    closeAction = new QAction(tr("&Exit"), this);
+    closeAction = new QAction(tr("Exit"), this);
     closeAction->setShortcuts(QKeySequence::Quit);
     connect(closeAction, SIGNAL(triggered()), this, SLOT(close()));
 
     // Pen Customization
-    penColorAction = new QAction(tr("&Pen Color..."), this);
+    penColorAction = new QAction(tr("Pen Color"), this);
     connect(penColorAction, SIGNAL(triggered()), this, SLOT(penColor()));
-    penSizeAction = new QAction(tr("Pen &Size..."), this);
+
+    eraserPenAction = new QAction(tr("Erase"), this);
+    connect(eraserPenAction, SIGNAL(triggered()), this, SLOT(eraserPen()));
+
+    penSizeAction = new QAction(tr("Pen Size"), this);
     connect(penSizeAction, SIGNAL(triggered()), this, SLOT(penSize()));
 
     // Clears the screen
-    deleteAllAction = new QAction(tr("&Delete All..."), this);
+    deleteAllAction = new QAction(tr("Delete All"), this);
     connect(deleteAllAction, SIGNAL(triggered()), drawingSpace, SLOT(clearImage()));
 }
 
 
 void MainWindow::createMenu(){
-    saveAs = new QMenu(tr("&Save As"), this);
+    saveAs = new QMenu(tr("Save As"), this);
     foreach(QAction *action, saveAsAction){
         saveAs->addAction(action);
     }
 
-    fileMenu = new QMenu(tr("&File"), this);
+    fileMenu = new QMenu(tr("File"), this);
     fileMenu->addAction(openAction);
     fileMenu->addMenu(saveAs);
     fileMenu->addSeparator();
     fileMenu->addAction(closeAction);
 
-    brushOptions = new QMenu(tr("&Brush"), this);
+    brushOptions = new QMenu(tr("Brush"), this);
     brushOptions->addAction(penColorAction);
     brushOptions->addAction(penSizeAction);
 
-    eraseOptions = new QMenu(tr("&Erase"), this);
+    eraseOptions = new QMenu(tr("Erase"), this);
+    eraseOptions->addAction(eraserPenAction);
+    fileMenu->addSeparator();
     eraseOptions->addAction(deleteAllAction);
 
     menuBar()->addMenu(fileMenu);
@@ -143,9 +154,13 @@ bool MainWindow::quickSave(){
 
 bool MainWindow::saveFile(const QByteArray &fileFormat){
     QString initialPath = QDir::currentPath() + "/untitled." + fileFormat;
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save As"), initialPath,
-                                                    tr("%1 Files (*.%2);; All Files(*)")
-                                                    .arg(QString::fromLatin1(fileFormat.toUpper())).arg(QString::fromLatin1(fileFormat)));
+    QString fileName = QFileDialog::getSaveFileName(
+        this,
+        tr("Save As"),
+        initialPath,
+        tr("%1 Files (*.%2);; All Files(*)").arg(QString::fromLatin1(fileFormat.toUpper()), QString::fromLatin1(fileFormat))
+        );
+
     if(fileName.isEmpty()){
         return false;
     }
