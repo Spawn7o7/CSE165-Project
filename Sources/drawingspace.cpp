@@ -6,8 +6,8 @@ DrawingSpace::DrawingSpace(QWidget *parent) : QWidget(parent)
     setAttribute(Qt::WA_StaticContents);
     modified = false;
     drawing = false;
-    myPenColor = Qt::black;
-    myPenSize = 1;
+    selectedPenColor = Qt::black;
+    selectedPenSize = 1;
 }
 
 
@@ -40,12 +40,12 @@ bool DrawingSpace::saveImage(const QString &fileName, const char *fileFormat){
 
 
 void DrawingSpace::setPenColor(const QColor &newColor){
-    myPenColor = newColor;
+    selectedPenColor = newColor;
 }
 
 
 void DrawingSpace::setPenSize(int newSize){
-    myPenSize = newSize;
+    selectedPenSize = newSize;
 }
 
 
@@ -99,11 +99,11 @@ void DrawingSpace::resizeEvent(QResizeEvent *event){ // resize the canvas
 
 void DrawingSpace::drawingSeg(const QPoint &endPoint){
     QPainter painter(&image);
-    painter.setPen(QPen(myPenColor, myPenSize, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    painter.setPen(QPen(selectedPenColor, selectedPenSize, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
     painter.drawLine(startingPoint, endPoint);
     modified = true;
 
-    int filler = (myPenSize / 2) + 2;
+    int filler = (selectedPenSize / 2) + 2;
     update(QRect(startingPoint, endPoint).normalized().adjusted(-filler, -filler, +filler, +filler));
     startingPoint = endPoint;
 }

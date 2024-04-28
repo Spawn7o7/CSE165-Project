@@ -17,11 +17,12 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(drawingSpace);
     createActions();
     createMenu();
+
     setWindowTitle(tr("Totally Not MS Paint"));
 }
 
 
-void MainWindow::openFile(){
+void MainWindow::openFile(){ //This did work in a previous iteration... not sure what happened
     if(quickSave()){ // If save file found, allow user to select it or start a new drawing
         QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath());
 
@@ -42,7 +43,7 @@ void MainWindow::closeEvent(QCloseEvent *event){ //prompts user to save before t
 }
 
 
-void MainWindow::saveFile(){
+void MainWindow::saveFile(){    // Manual save doesn't work either, it did in a previous iteration...
     QAction *action = qobject_cast<QAction *>(sender());
     QByteArray fileFormat = action->data().toByteArray();
     saveFile(fileFormat);
@@ -72,9 +73,9 @@ void MainWindow::eraserPen() {
 
 
 void MainWindow::createActions(){
-    openAction = new QAction(tr("&Open"), this);
+    openAction = new QAction(tr("&Open..."), this);
     openAction->setShortcuts(QKeySequence::Open);
-    connect(openAction, SIGNAL(triggered(bool)), this, SLOT(open()));
+    connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
 
     // Save drawing (choosing format type)
     foreach(QByteArray format, QImageWriter::supportedImageFormats()){
