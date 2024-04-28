@@ -1,11 +1,11 @@
 #include <QtWidgets>
 
 #include "mainwindow.h"
+#include "brushsizeicons.h"
 #include "drawingspace.h"
-#include "penSizeIcons.h"
 #include "ui_mainwindow.h"
 
-// Not entirely sure what the ui window does... but keeping it here in case the file is necessary
+//might need to comment out UI window if it clashes with app code, have not run and tested yet.
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -17,19 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(drawingSpace);
     createActions();
     createMenu();
-
     setWindowTitle(tr("Totally Not MS Paint"));
-}
-
-
-void MainWindow::openFile(){ //This did work in a previous iteration... not sure what happened
-    if(quickSave()){ // If save file found, allow user to select it or start a new drawing
-        QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath());
-
-        if(!fileName.isEmpty()){
-            drawingSpace->openImage(fileName);
-        }
-    }
 }
 
 
@@ -43,39 +31,49 @@ void MainWindow::closeEvent(QCloseEvent *event){ //prompts user to save before t
 }
 
 
-void MainWindow::saveFile(){    // Manual save doesn't work either, it did in a previous iteration...
+void MainWindow::open(){
+    if(quickSave()){ // If save file found, allow user to select it or start a new drawing
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath());
+
+        if(!fileName.isEmpty()){
+            drawingSpace->openImage(fileName);
+        }
+    }
+}
+
+
+void MainWindow::save(){
     QAction *action = qobject_cast<QAction *>(sender());
     QByteArray fileFormat = action->data().toByteArray();
     saveFile(fileFormat);
 }
 
 
-void MainWindow::penColor(){
-    QColor newColor = QColorDialog::getColor(drawingSpace->penColor());
+void MainWindow::brushColor(){
+    QColor newColor = QColorDialog::getColor(drawingSpace->brushColor());
     if(newColor.isValid()){
-        drawingSpace->setPenColor(newColor);
+        drawingSpace->setBrushColor(newColor);
     }
 }
 
+void MainWindow::eraserBrush() {
+    drawingSpace->setBrushColor(Qt::white);
+}
 
-void MainWindow::penSize() {
-    QColor currentColor = drawingSpace->penColor();
-    penSizeIcons dialog(currentColor, this);
+
+void MainWindow::brushSize() {
+    QColor currentColor = drawingSpace->brushColor();
+    brushSizeIcons dialog(currentColor, this);
     if (dialog.exec() == QDialog::Accepted) {
-        drawingSpace->setPenSize(dialog.getSelectedSize());
+        drawingSpace->setBrushSize(dialog.getSelectedSize());
     }
-}
-
-
-void MainWindow::eraserPen() {
-    drawingSpace->setPenColor(Qt::white);
 }
 
 
 void MainWindow::createActions(){
-    openAction = new QAction(tr("&Open..."), this);
+    openAction = new QAction(tr("&Open"), this);
     openAction->setShortcuts(QKeySequence::Open);
-    connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
+    connect(openAction, SIGNAL(triggered(bool)), this, SLOT(open()));
 
     // Save drawing (choosing format type)
     foreach(QByteArray format, QImageWriter::supportedImageFormats()){
@@ -88,44 +86,44 @@ void MainWindow::createActions(){
     }
 
     // Quitting the drawing program
-    closeAction = new QAction(tr("Exit"), this);
+    closeAction = new QAction(tr("&Exit"), this);
     closeAction->setShortcuts(QKeySequence::Quit);
     connect(closeAction, SIGNAL(triggered()), this, SLOT(close()));
 
-    // Pen Customization
-    penColorAction = new QAction(tr("Pen Color"), this);
-    connect(penColorAction, SIGNAL(triggered()), this, SLOT(penColor()));
+    // Brush Customization
+    brushColorAction = new QAction(tr("&Pen Color..."), this);
+    connect(brushColorAction, SIGNAL(triggered()), this, SLOT(brushColor()));
 
-    eraserPenAction = new QAction(tr("Erase"), this);
-    connect(eraserPenAction, SIGNAL(triggered()), this, SLOT(eraserPen()));
+    eraserBrushAction = new QAction(tr("Erase"), this);
+    connect(eraserBrushAction, SIGNAL(triggered()), this, SLOT(eraserBrush()));
 
-    penSizeAction = new QAction(tr("Pen Size"), this);
-    connect(penSizeAction, SIGNAL(triggered()), this, SLOT(penSize()));
+    brushSizeAction = new QAction(tr("Pen &Size..."), this);
+    connect(brushSizeAction, SIGNAL(triggered()), this, SLOT(brushSize()));
 
     // Clears the screen
-    deleteAllAction = new QAction(tr("Delete All"), this);
+    deleteAllAction = new QAction(tr("&Delete All..."), this);
     connect(deleteAllAction, SIGNAL(triggered()), drawingSpace, SLOT(clearImage()));
 }
 
 
 void MainWindow::createMenu(){
-    saveAs = new QMenu(tr("Save As"), this);
+    saveAs = new QMenu(tr("&Save As"), this);
     foreach(QAction *action, saveAsAction){
         saveAs->addAction(action);
     }
 
-    fileMenu = new QMenu(tr("File"), this);
+    fileMenu = new QMenu(tr("&File"), this);
     fileMenu->addAction(openAction);
     fileMenu->addMenu(saveAs);
     fileMenu->addSeparator();
     fileMenu->addAction(closeAction);
 
-    brushOptions = new QMenu(tr("Brush"), this);
-    brushOptions->addAction(penColorAction);
-    brushOptions->addAction(penSizeAction);
+    brushOptions = new QMenu(tr("&Brush"), this);
+    brushOptions->addAction(brushColorAction);
+    brushOptions->addAction(brushSizeAction);
 
     eraseOptions = new QMenu(tr("Erase"), this);
-    eraseOptions->addAction(eraserPenAction);
+    eraseOptions->addAction(eraserBrushAction);
     fileMenu->addSeparator();
     eraseOptions->addAction(deleteAllAction);
 
