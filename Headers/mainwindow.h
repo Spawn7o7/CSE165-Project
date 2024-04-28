@@ -25,11 +25,11 @@ protected:
     void closeEvent(QCloseEvent *event) override;
 
 private slots: //aka events
-    void openFile();
-    void saveFile();
-    void penColor();
-    void eraserPen();
-    void penSize();
+    void open();
+    void save();
+    void brushColor();
+    void eraserBrush();
+    void brushSize();
 
 private:
     Ui::MainWindow *ui;
@@ -48,10 +48,9 @@ private:
 
     QAction *openAction;
     QAction *closeAction;
-    QAction *penColorAction;
-    QAction *eraserPenAction;
-    QAction *penSizeAction;
-
+    QAction *brushColorAction;
+    QAction *eraserBrushAction;
+    QAction *brushSizeAction;
     QAction *deleteAllAction;
 };
 #endif // MAINWINDOW_H

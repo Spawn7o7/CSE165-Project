@@ -1,10 +1,16 @@
 #ifndef DRAWINGSPACE_H
 #define DRAWINGSPACE_H
 
-#include <QWidget>
 #include <QColor>
 #include <QImage>
 #include <QPoint>
+#include <QWidget>
+
+//class drawingspace
+//{
+//public:
+//    drawingspace();
+//};
 
 class DrawingSpace : public QWidget{
     Q_OBJECT
@@ -14,14 +20,12 @@ public:
     bool openImage(const QString &fileName);
     bool saveImage(const QString &fileName, const char *fileFormat);
 
-    void setPenColor(const QColor &newColor);
-    void setPenSize(int newSize);
+    void setBrushColor(const QColor &newColor);
+    void setBrushSize(int newSize);
 
     bool isModified() const {return modified;}
-    int selectedSize = 0;
-
-    QColor penColor() const {return selectedPenColor;}
-    int penSize() const {return selectedPenSize;}
+    QColor brushColor() const {return selectedBrushColor;}
+    int brushSize() const {return selectedBrushSize;}
 
 public slots:
     void clearImage();
@@ -41,8 +45,8 @@ private:
     bool modified;
     bool drawing;
 
-    QColor selectedPenColor;
-    int selectedPenSize;
+    QColor selectedBrushColor;
+    int selectedBrushSize;
     QImage image;
     QPoint startingPoint;
 
