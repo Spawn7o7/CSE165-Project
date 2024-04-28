@@ -86,22 +86,22 @@ void MainWindow::createActions(){
     }
 
     // Quitting the drawing program
-    closeAction = new QAction(tr("&Exit"), this);
+    closeAction = new QAction(tr("Exit"), this);
     closeAction->setShortcuts(QKeySequence::Quit);
     connect(closeAction, SIGNAL(triggered()), this, SLOT(close()));
 
     // Brush Customization
-    brushColorAction = new QAction(tr("&Pen Color..."), this);
+    brushColorAction = new QAction(tr("Pen Color..."), this);
     connect(brushColorAction, SIGNAL(triggered()), this, SLOT(brushColor()));
 
     eraserBrushAction = new QAction(tr("Erase"), this);
     connect(eraserBrushAction, SIGNAL(triggered()), this, SLOT(eraserBrush()));
 
-    brushSizeAction = new QAction(tr("Pen &Size..."), this);
+    brushSizeAction = new QAction(tr("Pen Size..."), this);
     connect(brushSizeAction, SIGNAL(triggered()), this, SLOT(brushSize()));
 
     // Clears the screen
-    deleteAllAction = new QAction(tr("&Delete All..."), this);
+    deleteAllAction = new QAction(tr("Delete All"), this);
     connect(deleteAllAction, SIGNAL(triggered()), drawingSpace, SLOT(clearImage()));
 }
 
@@ -118,7 +118,7 @@ void MainWindow::createMenu(){
     fileMenu->addSeparator();
     fileMenu->addAction(closeAction);
 
-    brushOptions = new QMenu(tr("&Brush"), this);
+    brushOptions = new QMenu(tr("Brush"), this);
     brushOptions->addAction(brushColorAction);
     brushOptions->addAction(brushSizeAction);
 
